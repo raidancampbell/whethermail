@@ -7,10 +7,17 @@ require 'sendgrid-ruby'
 # Make the Wunderground client
 w_api = Wunderground.new(WUNDERGROUND_KEY)
 # Make the call
-data = w_api.forecast_for('44106')['forecast']['simpleforecast']['forecastday'][0..1]
-immediate = "Now:\nhigh: "+ data[0]['high']['fahrenheit'] + ' low: '+data[0]['low']['fahrenheit'] + ' and generally: '+data[0]['conditions'].downcase
-later = "Several Hours:\nhigh: "+ data[1]['high']['fahrenheit'] + ' low: '+data[1]['low']['fahrenheit'] + ' and generally: '+data[1]['conditions'].downcase
+data = w_api.forecast_for('44106')['forecast']['simpleforecast']['forecastday']
+
+high_temp = [data[0]['high']['fahrenheit'], data[1]['high']['fahrenheit']]
+low = [data[0]['low']['fahrenheit'], data[1]['low']['fahrenheit']]
+conditions = [data[0]['conditions'].downcase, data[1]['conditions'].downcase]
+
+immediate = "Now:\nhigh: "+ high_temp[0] + ' low: '+low[0] + ' and generally: '+conditions[0]
+later = "Several Hours:\nhigh: "+ high_temp[1] + ' low: '+low[1] + ' and generally: '+conditions[1]
+
 puts immediate
+puts
 puts later
 
 
