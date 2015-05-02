@@ -9,9 +9,10 @@ w_api = Wunderground.new(WUNDERGROUND_KEY)
 # Make the call
 data = w_api.forecast_for('44106')['forecast']['simpleforecast']['forecastday']
 
-high_temp = [data[0]['high']['fahrenheit'], data[1]['high']['fahrenheit']]
-low = [data[0]['low']['fahrenheit'], data[1]['low']['fahrenheit']]
-conditions = [data[0]['conditions'].downcase, data[1]['conditions'].downcase]
+
+high_temp = data[0..1].collect {|x| x['high']['fahrenheit']}
+low =  data[0..1].collect {|x| x['low']['fahrenheit']}
+conditions = data[0..1].collect {|x| x['conditions'].downcase}
 
 immediate = "Now:\nhigh: "+ high_temp[0] + ' low: '+low[0] + ' and generally: '+conditions[0]
 later = "Several Hours:\nhigh: "+ high_temp[1] + ' low: '+low[1] + ' and generally: '+conditions[1]
@@ -34,5 +35,5 @@ mail = SendGrid::Mail.new do |m|
 end
 
 # Send the email and report the status.
-puts client.send(mail)['message']
+puts client.send(mail)
 # {"message":"success"}
