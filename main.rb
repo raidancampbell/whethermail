@@ -17,23 +17,40 @@ conditions = data[0..1].collect {|x| x['conditions'].downcase}
 immediate = "Now:\nhigh: "+ high_temp[0] + ' low: '+low[0] + ' and generally: '+conditions[0]
 later = "Several Hours:\nhigh: "+ high_temp[1] + ' low: '+low[1] + ' and generally: '+conditions[1]
 
-puts immediate
-puts
-puts later
+#we want an umbrella if there's rain/showers now or soon
+umbrella = data[0..1].collect {|x| x['conditions'].downcase}
+                      .collect{|x| x.include?('rain') or x.include?('shower')}.reduce(:|)#dat data flow
+
+#we never want cargo shorts
+cargo_shorts = false
+
+#we want shorts if the average temp across now and 'future' is above 60, and it's not raining.
+temps = high_temp.map{|x|x.to_i}.reduce(:+)+low.map{|x|x.to_i}.reduce(:+)
+shorts = ((temps / 4) > 60) and not umbrella
+
+#we want pants if the average temp across now and 'future' is below 50
+pants = ((temps / 4) < 50)
+
+#we want jacket if the average temp across now and 'future' is below 40
+jacket = ((temps / 4) < 40)
 
 
+text = "\ncargo shorts? #{cargo_shorts}\nshorts? #{shorts}\npants? #{pants}\njacket? #{jacket}\numbrella? #{umbrella}\n\n\n#{immediate}\n\n#{later}"
 
-# Make the SendGrid client
-client = SendGrid::Client.new(api_user: SENDGRID_USERNAME, api_key: SENDGRID_PASSWORD)
+puts text
 
-# Make the SendGrid email
-mail = SendGrid::Mail.new do |m|
-  m.to = 'USER@EMAIL.com' #your email here
-  m.from = 'weather@tacocat.land'
-  m.subject = 'Today\'s Weather Digest'
-  m.text = immediate+"\n\n"+later
-end
 
-# Send the email and report the status.
-puts client.send(mail)
-# {"message":"success"}
+# # Make the SendGrid client
+# client = SendGrid::Client.new(api_user: SENDGRID_USERNAME, api_key: SENDGRID_PASSWORD)
+#
+# # Make the SendGrid email
+# mail = SendGrid::Mail.new do |m|
+#   m.to = 'USER@EMAIL.com' #your email here
+#   m.from = 'weather@tacocat.land'
+#   m.subject = 'Today\'s Weather Digest'
+#   m.text = text
+# end
+#
+# # Send the email and report the status.
+# puts client.send(mail)
+# # {"message":"success"}
