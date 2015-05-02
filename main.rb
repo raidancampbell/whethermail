@@ -31,7 +31,7 @@ def send_email(destination, text)
 end
 
 
-
+#begin actual code execution
 
 data = get_data('44106')
 
@@ -39,8 +39,8 @@ high = data[0..1].collect {|x| x['high']['fahrenheit']}
 low =  data[0..1].collect {|x| x['low']['fahrenheit']}
 conditions = data[0..1].collect {|x| x['conditions'].downcase}
 
-immediate = "Now:\nhigh: "+ high[0] + ' low: '+low[0] + ' and generally: '+conditions[0]
-later = "Several Hours:\nhigh: "+ high[1] + ' low: '+low[1] + ' and generally: '+conditions[1]
+immediate_forecast = "Now:\nhigh: "+ high[0] + ' low: '+low[0] + ' and generally: '+conditions[0]
+later_forecast = "Several Hours:\nhigh: "+ high[1] + ' low: '+low[1] + ' and generally: '+conditions[1]
 
 #we want an umbrella if there's rain/showers now or soon
 umbrella = rain?(data)
@@ -48,27 +48,29 @@ umbrella = rain?(data)
 #we never want cargo shorts
 cargo_shorts = 'no'
 
-#we want shorts if the average temp across now and 'future' is above 60, and it's not raining.
+#take a very rough 'average' temperature over the next few hours
 average_temp = high.map{|x|x.to_i}.reduce(:+)+low.map{|x|x.to_i}.reduce(:+)
 average_temp /= 4
 
+#we want shorts if the average temp is above 60, and it's not raining.
 shorts = ((average_temp > 60) and umbrella.include?('no'))
-#we want pants if the average temp across now and 'future' is below 50
+
+#we want pants if the average temp is below 50
 pants = (average_temp < 50)
 
-bottom = ''
+bottom = ''# we leave a limbo in the recommendation.
 bottom = 'shorts' if shorts
 bottom = 'pants' if pants
 
 #we want jacket if the average temp across now and 'future' is below 40
 jacket = (average_temp< 40) ? 'yes' : 'no'
 
-text = "\ncargo shorts? #{cargo_shorts}"
-text <<"\nbottom: #{bottom}" if pants or shorts # don't make a recommendation if we're in limbo
-text <<"\njacket? #{jacket}"
-text <<"\numbrella? #{umbrella}"
-text <<"\n\n#{immediate}"
-text <<"\n\n#{later}"
-puts text
+message_body = "\ncargo shorts? #{cargo_shorts}"
+message_body <<"\nbottom: #{bottom}" if pants or shorts # don't make a recommendation if we're in limbo
+message_body <<"\njacket? #{jacket}"
+message_body <<"\numbrella? #{umbrella}"
+message_body <<"\n\n#{immediate_forecast}"
+message_body <<"\n\n#{later_forecast}"
+puts message_body
 
-send_email('USER@EMAIL.com', text)
+send_email('USER@EMAIL.com', message_body)
