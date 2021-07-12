@@ -1,7 +1,8 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.3.8)
+    addressable (2.8.0)
+      public_suffix (>= 2.0.2, < 5.0)
     domain_name (0.5.24)
       unf (>= 0.0.5, < 1.0.0)
     http-cookie (1.0.2)
@@ -12,6 +13,7 @@ GEM
     mime-types (2.5)
     multi_xml (0.6.0)
     netrc (0.10.3)
+    public_suffix (4.0.6)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
